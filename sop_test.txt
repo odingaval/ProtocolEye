@@ -1,0 +1,4 @@
+Standard Operating Procedure: Safety Valve Inspection
+1. Verify the pressure gauge is at 0 PSI.
+2. Turn the primary valve clockwise to the closed position.
+3. Lock the handle with the safety tag.

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>Gemini Multimodal Audit Agent</title>
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#3b82f6',
+            'secondary': '#1e293b',
+            'base': '#0f172a',
+            'content': '#94a3b8',
+          }
+        }
+      }
+    }
+  </script>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.1.1?external=rxjs",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.1.1?external=rxjs",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.1.1?external=rxjs",
+    "@angular/common/http": "https://esm.sh/@angular/common@^21.1.1/http?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.1.1?external=rxjs",
+    "process/browser": "https://esm.sh/process@^0.11.10/browser?external=rxjs"
+  }
+}
+</script>
+</head>
+<body class="bg-base text-content font-sans antialiased">
+  <app-root></app-root>
+</body>
+</html>
