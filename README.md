@@ -1,4 +1,4 @@
-# Gemini Multimodal Audit Agent
+# ProtocolEye Agent
 
 An agent that acts as a bridge between visual reality (video/images) and technical documentation (PDFs/Manuals) to detect contradictions and audit procedures.
 
