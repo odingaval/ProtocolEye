@@ -24,7 +24,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/protocol-eye",
+            "outputPath": "dist",
             "index": "index.html",
             "browser": "index.tsx",
             "polyfills": [],
