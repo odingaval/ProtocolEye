@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,22 +23,30 @@ const apiKeyMatch = envFileContent.match(/API_KEY\s*=\s*["']?([^"'\n\r]+)["']?/)
 
 if (apiKeyMatch && apiKeyMatch[1]) {
     apiKey = apiKeyMatch[1].trim();
-    console.log(`Found API Key: ${apiKey.substring(0, 5)}...`);
+    console.log(`Found API Key in .env: ${apiKey.substring(0, 5)}...`);
 } else {
-    console.log('No API_KEY found in .env content');
-    if (envFileContent) {
-        console.log('File content length: ', envFileContent.length);
-        console.log('First 50 chars: ', envFileContent.substring(0, 50).replace(/\n/g, '\\n'));
-    }
+    console.log('No API_KEY found in .env file');
 }
 
-// If not in .env, check actual process.env (for CI/CD)
+// If not in .env, check actual process.env (for CI/CD like Vercel)
 if (!apiKey && process.env.API_KEY) {
     apiKey = process.env.API_KEY;
     console.log('Found API Key in process.env');
 }
 
+if (!apiKey) {
+    console.warn('CRITICAL: No API_KEY found in .env or process.env!');
+}
+
 const targetPath = resolve(__dirname, '../src/environments/environment.ts');
+const targetDir = dirname(targetPath);
+
+// Ensure the directory exists
+try {
+    mkdirSync(targetDir, { recursive: true });
+} catch (err) {
+    console.error('Error creating directory:', err);
+}
 
 const envConfigFile = `export const environment = {
   production: false,
