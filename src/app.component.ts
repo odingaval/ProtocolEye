@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeminiService } from '@services/gemini.service';
-import { environment } from '@environments/environment';
 import { AuditResult } from './models/audit-result.model';
 import jsPDF from 'jspdf';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -18,7 +17,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 export class AppComponent {
   private geminiService = inject(GeminiService);
   serviceError = this.geminiService.errorMessage;
-  buildTimestamp = (environment as any).buildTimestamp;
 
 
   sopContent = signal<string>('');

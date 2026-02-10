@@ -1,47 +1,51 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 1. Prioritize process.env (Vercel's way)
-let apiKey = process.env.API_KEY || '';
+// Load .env file
+const envPath = resolve(__dirname, '../.env');
+let envFileContent = '';
 
-// 2. Fallback to .env (Local way)
-if (!apiKey) {
-    const envPath = resolve(__dirname, '../.env');
-    try {
-        const envFileContent = readFileSync(envPath, 'utf8');
-        const apiKeyMatch = envFileContent.match(/API_KEY\s*=\s*["']?([^"'\n\r]+)["']?/);
-        if (apiKeyMatch && apiKeyMatch[1]) {
-            apiKey = apiKeyMatch[1].trim();
-            console.log(`Found API Key in .env: ${apiKey.substring(0, 5)}...`);
-        }
-    } catch (error) {
-        // .env not found, which is normal on Vercel
+try {
+    envFileContent = readFileSync(envPath, 'utf8');
+} catch (error) {
+    console.warn('Warning: .env file not found. Using empty environment variables.');
+}
+
+// Parse .env content manually
+let apiKey = '';
+// Match API_KEY=value, handling optional spaces around =, and optional quotes
+// Capture group 1 is the key
+const apiKeyMatch = envFileContent.match(/API_KEY\s*=\s*["']?([^"'\n\r]+)["']?/);
+
+if (apiKeyMatch && apiKeyMatch[1]) {
+    apiKey = apiKeyMatch[1].trim();
+    console.log(`Found API Key: ${apiKey.substring(0, 5)}...`);
+} else {
+    console.log('No API_KEY found in .env content');
+    if (envFileContent) {
+        console.log('File content length: ', envFileContent.length);
+        console.log('First 50 chars: ', envFileContent.substring(0, 50).replace(/\n/g, '\\n'));
     }
 }
 
-if (apiKey) {
-    console.log(`Final API Key set: ${apiKey.substring(0, 5)}...`);
-} else {
-    console.warn('CRITICAL: No API_KEY found. Application will run in restricted mode.');
+// If not in .env, check actual process.env (for CI/CD)
+if (!apiKey && process.env.API_KEY) {
+    apiKey = process.env.API_KEY;
+    console.log('Found API Key in process.env');
 }
 
 const targetPath = resolve(__dirname, '../src/environments/environment.ts');
-const targetDir = dirname(targetPath);
 
-// Ensure directory exists
-try { mkdirSync(targetDir, { recursive: true }); } catch (err) { }
-
-const buildTime = new Date().toLocaleString();
 const envConfigFile = `export const environment = {
-  production: true,
-  apiKey: '${apiKey}',
-  buildTimestamp: '${buildTime}'
+  production: false,
+  apiKey: '${apiKey}'
 };
 `;
 
 writeFileSync(targetPath, envConfigFile);
-console.log(`Environment generated at ${targetPath} (Build: ${buildTime})`);
+
+console.log(`Output generated at ${targetPath}`);
