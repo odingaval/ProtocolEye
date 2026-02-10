@@ -1,21 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { GoogleGenAI, Type } from '@google/genai';
 import { environment } from '@environments/environment';
 import { AuditResult } from '@models/audit-result.model';
 
 @Injectable({ providedIn: 'root' })
 export class GeminiService {
-  private genAI: GoogleGenAI;
+  private genAI!: GoogleGenAI;
+  errorMessage = signal<string | null>(null);
 
   constructor() {
     const apiKey = environment.apiKey;
     if (!apiKey) {
-      throw new Error("API_KEY environment variable not set. Please set the API_KEY environment variable or create a .env file.");
+      console.warn("API_KEY not found in environment. Please check Vercel settings.");
+      this.errorMessage.set("Gemini API Key is missing. Please configure it in your deployment settings.");
+      return;
     }
     this.genAI = new GoogleGenAI({ apiKey: apiKey });
   }
 
   async auditProcedure(imageDataBase64: string, documentText: string, mimeType: string = 'image/jpeg'): Promise<AuditResult> {
+    if (!this.genAI) {
+      throw new Error(this.errorMessage() || "AI Service not initialized");
+    }
     const model = this.genAI.models;
 
     const mediaPart = {

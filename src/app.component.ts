@@ -16,6 +16,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 })
 export class AppComponent {
   private geminiService = inject(GeminiService);
+  serviceError = this.geminiService.errorMessage;
+
 
   sopContent = signal<string>('');
   imagePreviewUrl = signal<string | null>(null);
