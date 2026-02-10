@@ -15,12 +15,12 @@ export class GeminiService {
     this.genAI = new GoogleGenAI({ apiKey: apiKey });
   }
 
-  async auditProcedure(imageDataBase64: string, documentText: string): Promise<AuditResult> {
+  async auditProcedure(imageDataBase64: string, documentText: string, mimeType: string = 'image/jpeg'): Promise<AuditResult> {
     const model = this.genAI.models;
 
-    const imagePart = {
+    const mediaPart = {
       inlineData: {
-        mimeType: 'image/jpeg',
+        mimeType: mimeType,
         data: imageDataBase64,
       },
     };
@@ -49,7 +49,7 @@ export class GeminiService {
         contents: {
           parts: [
             { text: prompt },
-            imagePart
+            mediaPart
           ]
         },
         config: {

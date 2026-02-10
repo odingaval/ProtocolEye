@@ -1,28 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
+
 <head>
   <meta charset="utf-8" />
-  <title>Gemini Multimodal Audit Agent</title>
+  <title>ProtocolEye</title>
   <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            'primary': '#3b82f6',
-            'secondary': '#1e293b',
-            'base': '#0f172a',
-            'content': '#94a3b8',
-          }
-        }
-      }
-    }
-  </script>
-<script type="importmap">
+
+  <script type="importmap">
 {
   "imports": {
     "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
@@ -42,7 +28,9 @@
 }
 </script>
 </head>
-<body class="bg-base text-content font-sans antialiased">
+
+<body class="bg-base text-main font-sans antialiased">
   <app-root></app-root>
 </body>
+
 </html>

@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Premium Midnight Dark Theme (Default) */
+        --color-primary: #60a5fa;
+        --color-base: #020617;
+        --color-card: #020617;
+        --color-border: #111827;
+        --color-text-main: #f8fafc;
+        --color-text-muted: #94a3b8;
+        --color-secondary: #0f172a;
+    }
+}
+
+@layer components {
+    .glass {
+        @apply bg-base border border-white/5 shadow-2xl;
+    }
+}

@@ -1,20 +1,24 @@
-<main class="min-h-screen w-full bg-base p-4 sm:p-6 lg:p-8">
+<main class="min-h-screen w-full bg-base text-main p-4 sm:p-6 lg:p-8 transition-colors duration-500">
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
-    <header class="text-center mb-10">
-      <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">Gemini 3 Multimodal Audit Agent</h1>
-      <p class="mt-3 text-lg text-content max-w-2xl mx-auto">
+    <header class="text-center mb-12 relative">
+
+
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-main tracking-tight mb-4 drop-shadow-sm">
+        Protocol<span class="text-primary italic">Eye</span>
+      </h1>
+      <p class="mt-3 text-lg text-muted max-w-2xl mx-auto font-medium">
         Your intelligent assistant for compliance and procedure verification.
       </p>
 
       <!-- Feature Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 max-w-5xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-5xl mx-auto">
         <!-- Feature 1 -->
         <div
-          class="bg-secondary/30 border border-slate-700/50 rounded-lg p-4 text-left hover:border-primary/50 transition-colors">
-          <div class="flex items-center mb-2">
-            <div class="p-2 bg-blue-500/20 rounded-md mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24"
+          class="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-all duration-300 group cursor-default">
+          <div class="flex items-center mb-4">
+            <div class="p-3 bg-blue-500/10 rounded-xl mr-4 group-hover:bg-blue-500/20 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -22,206 +26,320 @@
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </div>
-            <h3 class="font-semibold text-white">Visual Analysis</h3>
+            <h3 class="font-bold text-main">Visual Analysis</h3>
           </div>
-          <p class="text-sm text-slate-400">Advanced computer vision understands procedural steps and equipment states
-            from your images.</p>
+          <p class="text-sm text-muted leading-relaxed">Advanced computer vision understands procedural steps and
+            equipment states from your images.</p>
         </div>
 
         <!-- Feature 2 -->
         <div
-          class="bg-secondary/30 border border-slate-700/50 rounded-lg p-4 text-left hover:border-primary/50 transition-colors">
-          <div class="flex items-center mb-2">
-            <div class="p-2 bg-purple-500/20 rounded-md mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24"
+          class="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-all duration-300 group cursor-default">
+          <div class="flex items-center mb-4">
+            <div class="p-3 bg-purple-500/10 rounded-xl mr-4 group-hover:bg-purple-500/20 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
             </div>
-            <h3 class="font-semibold text-white">SOP Compliance</h3>
+            <h3 class="font-bold text-main">SOP Compliance</h3>
           </div>
-          <p class="text-sm text-slate-400">Instantly cross-references observed actions against your standard operating
-            procedures.</p>
+          <p class="text-sm text-muted leading-relaxed">Instantly cross-references observed actions against your
+            standard operating procedures.</p>
         </div>
 
         <!-- Feature 3 -->
         <div
-          class="bg-secondary/30 border border-slate-700/50 rounded-lg p-4 text-left hover:border-primary/50 transition-colors">
-          <div class="flex items-center mb-2">
-            <div class="p-2 bg-green-500/20 rounded-md mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24"
+          class="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-all duration-300 group cursor-default">
+          <div class="flex items-center mb-4">
+            <div class="p-3 bg-green-500/10 rounded-xl mr-4 group-hover:bg-green-500/20 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 class="font-semibold text-white">Audit Reporting</h3>
+            <h3 class="font-bold text-main">Audit Reporting</h3>
           </div>
-          <p class="text-sm text-slate-400">Generates instant, actionable discrepancy logs and executive executive
+          <p class="text-sm text-muted leading-relaxed">Generates instant, actionable discrepancy logs and executive
             summaries.</p>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
-    <div class="space-y-8">
+    <div class="space-y-8 pb-20">
       <!-- Input Section -->
-      <section class="bg-secondary/50 border border-slate-700 rounded-lg p-6 shadow-lg">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section class="glass rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <!-- Subtle gradient border effect -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- SOP Input -->
-          <div>
-            <label for="sop-content" class="block text-sm font-medium text-slate-300 mb-2">
-              1. Paste Standard Operating Procedure (SOP)
+          <div class="flex flex-col">
+            <label for="sop-content"
+              class="flex items-center text-sm font-bold text-main mb-3 uppercase tracking-wider">
+              <span
+                class="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs mr-2">1</span>
+              SOP Content
             </label>
-            <textarea id="sop-content" [value]="sopContent()" (input)="onSopContentInput($event)" rows="12"
-              class="w-full bg-base/50 border border-slate-600 rounded-md shadow-sm focus:ring-primary focus:border-primary text-slate-300 p-3 transition"
-              placeholder="e.g., Step 1: Unlatch the primary safety clamp. Step 2: Verify the pressure gauge reads below 5 PSI..."></textarea>
-            <div class="mt-2 flex justify-end">
+            <div class="relative group flex-grow">
+              <textarea id="sop-content" [value]="sopContent()" (input)="onSopContentInput($event)"
+                (dragover)="onSopDragOver($event)" (dragleave)="onSopDragLeave($event)" (drop)="onSopDrop($event)"
+                rows="12"
+                class="w-full bg-black/40 border border-border rounded-xl shadow-inner focus:ring-2 focus:ring-primary/20 focus:border-primary text-main p-4 transition-all duration-300 resize-none placeholder:text-muted/50"
+                [class.ring-2]="isDraggingSop()" [class.ring-primary]="isDraggingSop()"
+                placeholder="Paste your Standard Operating Procedure here or drop a file..."></textarea>
+
+              <!-- Drop overlay hint -->
+              <div *ngIf="isDraggingSop()"
+                class="absolute inset-0 bg-primary/5 rounded-xl flex items-center justify-center pointer-events-none border-2 border-dashed border-primary">
+                <span class="text-primary font-bold">Drop files here</span>
+              </div>
+            </div>
+
+            <div class="mt-3 flex justify-end">
               <button type="button" (click)="triggerSopFileInput()"
-                class="text-xs text-primary hover:text-blue-400 flex items-center transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                class="text-sm font-semibold text-primary hover:text-primary/80 flex items-center transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
-                Upload text file
+                Upload Document
               </button>
-              <input type="file" id="sopFileInput" (change)="onSopFileChange($event)" accept=".txt,.md"
+              <input type="file" id="sopFileInput" (change)="onSopFileChange($event)" accept=".txt,.md,.pdf"
                 class="hidden" />
             </div>
           </div>
 
           <!-- Image Input -->
-          <div>
-            <label class="block text-sm font-medium text-slate-300 mb-2">
-              2. Upload Visual Evidence (Image/Video Frame)
+          <div class="flex flex-col">
+            <label class="flex items-center text-sm font-bold text-main mb-3 uppercase tracking-wider">
+              <span
+                class="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs mr-2">2</span>
+              Visual Evidence
             </label>
             <div (click)="triggerFileInput()"
-              class="relative w-full h-full min-h-[200px] bg-base/50 border-2 border-dashed border-slate-600 rounded-md flex items-center justify-center cursor-pointer hover:border-primary transition-colors group">
+              class="relative flex-grow min-h-[300px] bg-black/40 border-2 border-dashed border-border rounded-xl flex items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-black/60 transition-all duration-300 group overflow-hidden">
               @if (imagePreviewUrl()) {
-              <img [src]="imagePreviewUrl()" alt="Visual evidence preview"
-                class="max-h-full max-w-full object-contain rounded-md p-1" />
+              @if (isVideo()) {
+              <video [src]="imagePreviewUrl()" controls class="max-h-full max-w-full rounded-lg shadow-xl"></video>
               } @else {
-              <div class="text-center text-slate-500 p-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <p class="mt-2">Click to upload an image</p>
-                <p class="text-xs">PNG, JPG, WEBP</p>
+              <img [src]="imagePreviewUrl()" alt="Visual evidence preview"
+                class="max-h-full max-w-full object-contain p-2 hover:scale-[1.01] transition-transform duration-500" />
+              }
+              <!-- Change overlay -->
+              <div
+                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                <span class="text-white font-bold px-4 py-2 bg-primary/80 rounded-full">Change
+                  File</span>
+              </div>
+              } @else {
+              <div class="text-center p-8 transition-transform group-hover:scale-105 duration-300">
+                <div
+                  class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary group-hover:bg-primary/20 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <p class="font-bold text-main group-hover:text-primary transition-colors">Click or drag & drop</p>
+                <p class="text-sm text-muted mt-1 uppercase tracking-tighter">Images or Videos</p>
               </div>
               }
-              <input type="file" id="fileInput" (change)="onFileChange($event)"
-                accept="image/png, image/jpeg, image/webp" class="hidden" />
+              <input type="file" id="fileInput" (change)="onFileChange($event)" accept="image/*,video/*"
+                class="hidden" />
             </div>
           </div>
         </div>
 
-        <!-- Audit Button -->
-        <div class="mt-6 flex justify-end">
+        <!-- Action Button -->
+        <div class="mt-10 flex justify-center">
           <button (click)="runAudit()" [disabled]="!canAudit() || isLoading()"
-            class="px-6 py-3 bg-primary text-white font-semibold rounded-md shadow-md hover:bg-blue-500 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-base focus:ring-primary">
-            @if (isLoading()) {
-            <span>Auditing...</span>
-            } @else {
-            <span>Run Audit</span>
-            }
+            class="group relative px-10 py-4 bg-primary text-white font-bold rounded-2xl shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] disabled:bg-slate-700 disabled:shadow-none disabled:cursor-not-allowed transition-all duration-300 overflow-hidden active:scale-95">
+            <span class="relative z-10 flex items-center">
+              @if (isLoading()) {
+              <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none">
+                </circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Processing Audit...
+              } @else {
+              Start Compliance Audit
+              <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+              }
+            </span>
+            <!-- Button shine effect -->
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
+            </div>
           </button>
         </div>
       </section>
 
-      <!-- Loading State -->
+      <!-- Loading Deep Dive -->
       @if (isLoading()) {
-      <section class="text-center p-8 bg-secondary/50 border border-slate-700 rounded-lg">
-        <div class="flex items-center justify-center space-x-3">
-          <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-            </path>
-          </svg>
-          <p class="text-lg text-slate-300">{{ loadingMessage() }}</p>
+      <div class="text-center py-12 animate-pulse">
+        <div class="inline-block relative">
+          <div class="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
         </div>
-      </section>
+        <p
+          class="mt-6 text-xl font-medium text-main tracking-tight uppercase tracking-widest text-sm letter-spacing-widest">
+          {{ loadingMessage() }}</p>
+      </div>
       }
 
       <!-- Error State -->
       @if (error()) {
-      <section class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg" role="alert">
-        <strong class="font-bold">Audit Failed:</strong>
-        <span class="block sm:inline ml-2">{{ error() }}</span>
+      <section
+        class="bg-red-500/10 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-6 rounded-xl animate-in slide-in-from-top duration-300">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <p class="font-bold">Audit Error</p>
+            <p class="text-sm opacity-90">{{ error() }}</p>
+          </div>
+        </div>
       </section>
       }
 
-      <!-- Results Section -->
+      <!-- Results Deep Dive -->
       @if (auditResult(); as result) {
-      <section class="space-y-6">
-        <!-- Executive Summary -->
-        <div>
-          <h2 class="text-xl font-semibold text-white mb-3">Executive Summary</h2>
-          <div class="border rounded-lg p-4" [class]="getStatusClass(result.executiveSummary.status)">
-            <span class="font-bold text-lg mr-2">{{ result.executiveSummary.status }}</span>
-            <p class="inline text-base">{{ result.executiveSummary.summary }}</p>
-          </div>
-        </div>
-
-        <!-- Protocol Matches -->
-        <div>
-          <h2 class="text-xl font-semibold text-white mb-3">Protocol Matches</h2>
-          <div class="bg-secondary/50 border border-slate-700 rounded-lg p-4 space-y-2">
-            @for (match of result.protocolMatches; track match) {
-            <div class="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-3 mt-1 flex-shrink-0"
-                viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd" />
-              </svg>
-              <p>{{ match }}</p>
+      <div class="space-y-8 animate-in fade-in zoom-in duration-500">
+        <!-- Result Summary -->
+        <section class="glass rounded-3xl p-8 relative overflow-hidden">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex-grow">
+              <h2 class="text-sm font-bold text-muted uppercase tracking-widest mb-2 letter-spacing-widest">Executive
+                Summary</h2>
+              <p class="text-lg text-main font-semibold leading-relaxed">{{ result.executiveSummary.summary }}</p>
             </div>
-            } @empty {
-            <p class="text-slate-500">No protocol matches were identified.</p>
-            }
-          </div>
-        </div>
 
-        <!-- Discrepancy Log -->
-        <div>
-          <h2 class="text-xl font-semibold text-white mb-3">Discrepancy Log</h2>
-          <div class="bg-secondary/50 border border-slate-700 rounded-lg p-4 space-y-2">
-            @for (log of result.discrepancyLog; track log) {
-            <div class="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 mr-3 mt-1 flex-shrink-0"
-                viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd" />
-              </svg>
-              <div>
-                <p class="font-semibold">{{ log.discrepancy }}</p>
-                <p class="text-sm text-slate-500">Reference: {{ log.reference || 'Not specified' }}</p>
+            <div class="flex flex-col items-center justify-center p-6 rounded-2xl min-w-[160px]"
+              [class]="getStatusClass(result.executiveSummary.status)">
+              <span class="text-xs font-bold uppercase tracking-widest mb-1">Status</span>
+              <span class="text-3xl font-extrabold uppercase">{{ result.executiveSummary.status }}</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Protocol Matches -->
+          <section class="glass rounded-3xl p-8">
+            <h3 class="flex items-center text-sm font-bold text-main mb-6 uppercase tracking-widest">
+              <span class="p-2 bg-green-500/10 rounded-lg mr-3 text-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              Protocol Matches
+            </h3>
+            <div class="space-y-4">
+              @for (match of result.protocolMatches; track match) {
+              <div class="flex items-start p-3 glass rounded-xl hover:bg-card/20 transition-colors">
+                <p class="text-sm text-main leading-relaxed">{{ match }}</p>
               </div>
+              } @empty {
+              <p class="text-muted italic text-center text-sm py-4">No specific matches identified.</p>
+              }
             </div>
-            } @empty {
-            <p class="text-slate-500">No discrepancies found. Procedure followed correctly.</p>
-            }
-          </div>
+          </section>
+
+          <!-- Discrepancy Log -->
+          <section class="glass rounded-3xl p-8">
+            <h3 class="flex items-center text-sm font-bold text-main mb-6 uppercase tracking-widest">
+              <span class="p-2 bg-red-500/10 rounded-lg mr-3 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              Discrepancy Log
+            </h3>
+            <div class="space-y-4">
+              @for (log of result.discrepancyLog; track log) {
+              <div
+                class="p-4 bg-red-500/[0.03] border border-red-500/10 rounded-2xl hover:bg-red-500/[0.05] transition-colors group">
+                <p class="font-bold text-main text-sm mb-1 group-hover:text-red-500 transition-colors">{{
+                  log.discrepancy }}</p>
+                <p class="text-xs text-muted uppercase tracking-tighter">Ref: {{ log.reference || 'N/A' }}</p>
+              </div>
+              } @empty {
+              <div class="text-center py-6">
+                <div
+                  class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3 text-green-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p class="text-muted italic text-sm">Full Compliance Detected</p>
+              </div>
+              }
+            </div>
+          </section>
         </div>
 
-        <!-- Reasoning Trace -->
-        @if (result.reasoningTrace) {
-        <div>
-          <h2 class="text-xl font-semibold text-white mb-3">Reasoning Trace</h2>
-          <div class="bg-secondary/50 border border-slate-700 rounded-lg p-4">
-            <p class="italic text-slate-400">"{{ result.reasoningTrace }}"</p>
+        <!-- Reasoning & Actions -->
+        <section class="glass rounded-3xl p-8 flex flex-col md:flex-row gap-6 items-center">
+          <div class="flex-grow">
+            <h3 class="text-sm font-bold text-main mb-4 uppercase tracking-widest">Reasoning Trace</h3>
+            <p class="text-sm text-muted italic italic leading-relaxed">
+              &ldquo;{{ result.reasoningTrace || 'The system analyzed the procedural steps against the visual evidence
+              and determined the above findings.' }}&rdquo;
+            </p>
           </div>
-        </div>
-        }
-      </section>
+
+          <div class="flex gap-3 w-full md:w-auto flex-wrap">
+            <button (click)="copyAuditResult()"
+              class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center min-w-[140px]"
+              [class.bg-card]="!isCopied()" [class.text-main]="!isCopied()" [class.border-border]="!isCopied()"
+              [class.bg-green-500]="isCopied()" [class.text-white]="isCopied()">
+              <svg *ngIf="!isCopied()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              {{ isCopied() ? 'Copied' : 'Copy Text' }}
+            </button>
+
+            <button (click)="exportAuditResultPDF()"
+              class="flex-1 md:flex-none px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l4 4m-4-4h12" />
+              </svg>
+              PDF Report
+            </button>
+
+            <button (click)="resetAudit()"
+              class="flex-1 md:flex-none px-6 py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-bold text-sm hover:bg-red-500/20 transition-all flex items-center justify-center">
+              New Audit
+            </button>
+          </div>
+        </section>
+      </div>
       }
     </div>
   </div>
+
+
 </main>

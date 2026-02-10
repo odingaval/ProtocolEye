@@ -1,12 +1,12 @@
 {
-  "name": "gemini-multimodal-audit-agent",
+  "name": "protocol-eye",
   "version": "1.0.0",
   "description": "An agent that acts as a bridge between visual reality (video/images) and technical documentation (PDFs/Manuals) to detect contradictions and audit procedures.",
   "type": "module",
   "scripts": {
-    "start": "ng serve --host 0.0.0.0 --port 4200",
-    "build": "ng build --configuration production",
-    "watch": "ng build --watch --configuration development",
+    "start": "node scripts/set-env.js && ng serve --host 0.0.0.0 --port 4200",
+    "build": "node scripts/set-env.js && ng build --configuration production",
+    "watch": "node scripts/set-env.js && ng build --watch --configuration development",
     "test": "ng test",
     "clean": "rm -rf dist node_modules"
   },
@@ -20,6 +20,8 @@
     "@angular/platform-browser-dynamic": "^21.0.0",
     "@angular/router": "^21.0.0",
     "@google/genai": "^1.38.0",
+    "jspdf": "^4.1.0",
+    "pdfjs-dist": "^5.4.624",
     "process": "^0.11.10",
     "rxjs": "~7.8.0",
     "tslib": "^2.6.0",
@@ -30,6 +32,9 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "@types/node": "^22.0.0",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
     "typescript": "~5.9.0"
   }
 }

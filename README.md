@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # ProtocolEye Agent
+=======
+# ProtocolEye
+>>>>>>> 88e3d0d (feat: overhaul premium dark UI and fix PDF processing)
 
 An agent that acts as a bridge between visual reality (video/images) and technical documentation (PDFs/Manuals) to detect contradictions and audit procedures.
 
@@ -48,7 +52,7 @@ Build for production:
 npm run build
 ```
 
-The built files will be in `dist/gemini-multimodal-audit-agent/browser/`
+The built files will be in `dist/protocol-eye/browser/`
 
 ## Usage
 
