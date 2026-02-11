@@ -38,14 +38,24 @@ if (!apiKey && process.env.API_KEY) {
     console.log('Found API Key in process.env');
 }
 
-const targetPath = resolve(__dirname, '../src/environments/environment.ts');
+const environments = [
+    {
+        path: '../src/environments/environment.ts',
+        production: false
+    },
+    {
+        path: '../src/environments/environment.prod.ts',
+        production: true
+    }
+];
 
-const envConfigFile = `export const environment = {
-  production: false,
+environments.forEach(env => {
+    const targetPath = resolve(__dirname, env.path);
+    const envConfigFile = `export const environment = {
+  production: ${env.production},
   apiKey: '${apiKey}'
 };
 `;
-
-writeFileSync(targetPath, envConfigFile);
-
-console.log(`Output generated at ${targetPath}`);
+    writeFileSync(targetPath, envConfigFile);
+    console.log(`Output generated at ${targetPath}`);
+});
