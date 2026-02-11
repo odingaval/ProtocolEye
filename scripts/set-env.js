@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -51,6 +51,13 @@ const environments = [
 
 environments.forEach(env => {
     const targetPath = resolve(__dirname, env.path);
+    const targetDir = dirname(targetPath);
+
+    if (!existsSync(targetDir)) {
+        mkdirSync(targetDir, { recursive: true });
+        console.log(`Created directory: ${targetDir}`);
+    }
+
     const envConfigFile = `export const environment = {
   production: ${env.production},
   apiKey: '${apiKey}'
