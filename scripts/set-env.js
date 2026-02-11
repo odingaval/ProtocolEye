@@ -33,9 +33,17 @@ if (apiKeyMatch && apiKeyMatch[1]) {
 }
 
 // If not in .env, check actual process.env (for CI/CD)
-if (!apiKey && process.env.API_KEY) {
-    apiKey = process.env.API_KEY;
-    console.log('Found API Key in process.env');
+if (!apiKey) {
+    if (process.env.API_KEY) {
+        apiKey = process.env.API_KEY;
+        console.log('Found API Key in process.env.API_KEY');
+    } else if (process.env.GEMINI_API_KEY) {
+        apiKey = process.env.GEMINI_API_KEY;
+        console.log('Found API Key in process.env.GEMINI_API_KEY');
+    } else {
+        console.log('API_KEY or GEMINI_API_KEY not found in process.env');
+        console.log('Available keys beginning with A or G:', Object.keys(process.env).filter(k => k.startsWith('A') || k.startsWith('G')));
+    }
 }
 
 const environments = [
