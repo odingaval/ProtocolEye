@@ -50,6 +50,7 @@ inspection offline.
 ```bash
 npm start     # app + API on http://localhost:3001
 npm test      # 36 maintained checks, no runner to install
+npm run build # deploy-time syntax check (used by Vercel)
 ```
 
 Open http://localhost:3001/ in a browser.
