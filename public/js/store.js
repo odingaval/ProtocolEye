@@ -37,7 +37,7 @@ function loadQueue() {
 }
 
 export const state = {
-  view: 'new',
+  view: 'landing',
   procedureName: 'Untitled procedure',
   inspectionId: newInspectionId(),
   // inputs
@@ -324,7 +324,7 @@ function dequeueCurrent() {
 
 // ---------- sample preview ----------
 export function previewSample() {
-  state.procedureName = 'Electrical Lockout-Tagout (sample)';
+  state.procedureName = 'Cabin Safety Briefing (sample)';
   state.sopText = DEMO_SAMPLES[0].sopText;
   state.frames = [{ dataUrl: SAMPLE_FRAME_DATA_URL, base64: '', timestamp: null, label: 'Sample frame' }];
   state.activeFrameIndex = 0;
@@ -337,6 +337,12 @@ export function previewSample() {
   state.qaThreads = {};
   state.isSamplePreview = true;
   state.view = 'dashboard';
+  render();
+}
+
+export function goLanding() {
+  state.view = 'landing';
+  state.error = null;
   render();
 }
 

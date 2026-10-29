@@ -1,7 +1,7 @@
 // HTML rendering for all three screens. Text inputs update state without
 // re-rendering (to preserve focus); actions re-render via store.render().
 import {
-  state, activeFrame, canRun, selectedStep, needsReview,
+  state, activeFrame, canRun, selectedStep,
   connStatus, isOfflineMode, extractLocalSteps,
 } from './store.js';
 import { STEP_META } from './demo-data.js';
@@ -17,22 +17,31 @@ function statusPill() {
 
 function header() {
   const inDash = state.view === 'dashboard';
+  const inLanding = state.view === 'landing';
+  const right = inLanding
+    ? `<nav class="site-nav">
+         <a href="#how">How it works</a>
+         <button type="button" class="nav-link" data-action="preview">Dashboard</button>
+         <a href="#trust">Why trust it</a>
+       </nav>
+       <button type="button" class="btn btn-primary" data-action="go-new">Try the demo</button>`
+    : inDash
+      ? `<button type="button" class="nav-link" data-action="go-landing">Back to home</button>
+         ${statusPill()}
+         ${state.auditResult ? `<button type="button" class="btn" data-action="export">Export report</button>` : ''}`
+      : statusPill();
   return `
   <header class="site-header">
     <div class="site-header-inner">
-      <button type="button" class="logo" data-action="go-new">ProtocolEye</button>
-      ${inDash ? `<span class="context-line">${escapeHtml(state.procedureName)} · Inspection ${escapeHtml(state.inspectionId)}</span>` : ''}
-      <div class="header-right">
-        ${statusPill()}
-        ${inDash && state.auditResult ? `<button type="button" class="btn" data-action="export">Export report</button>` : ''}
-      </div>
+      <button type="button" class="logo" data-action="go-landing">Protocol<span class="logo-eye">Eye</span></button>
+      <div class="header-right">${right}</div>
     </div>
     ${state.serviceError ? `<div class="header-note">${escapeHtml(state.serviceError)}</div>` : ''}
   </header>`;
 }
 
 function footer() {
-  return `<footer class="site-footer"><p>Muse Spark 1.3 · SAM 3.1 · Muse Voice · Meta Global AI Developer Hackathon</p></footer>`;
+  return `<footer class="site-footer"><p>Protocol<span class="logo-eye">Eye</span> · Meta Global AI Developer Hackathon</p></footer>`;
 }
 
 function errorBlock() {
@@ -44,6 +53,132 @@ function analysisSummary() {
   if (state.useSam) parts.push('SAM');
   if (state.useVoice) parts.push('Voice');
   return parts.join(', ');
+}
+
+// ---------------- landing ----------------
+// Mini self-playing audit for the hero card: cycles briefing steps,
+// moving the tracked box and swapping the verdict pill per step.
+export const HERO_DEMO_STEPS = [
+  { n: 2, title: 'Seatbelt demonstration', pill: 'pill-green', glyph: '✓', label: 'Supported', time: '00:12', box: { left: '10%', top: '24%', width: '32%', height: '54%' } },
+  { n: 3, title: 'Emergency exits', pill: 'pill-green', glyph: '✓', label: 'Supported', time: '00:24', box: { left: '58%', top: '24%', width: '32%', height: '54%' } },
+  { n: 4, title: 'Oxygen masks', pill: 'pill-red', glyph: '!', label: 'Deviation', time: '00:36', box: { left: '33%', top: '12%', width: '34%', height: '46%' } },
+  { n: 5, title: 'Life vest', pill: 'pill-yellow', glyph: '?', label: 'Inconclusive', time: '00:48', box: { left: '24%', top: '46%', width: '52%', height: '40%' } },
+];
+
+let heroIndex = 0;
+let heroTimer = null;
+
+function renderHeroStep() {
+  const s = HERO_DEMO_STEPS[heroIndex];
+  const title = document.getElementById('heroTitle');
+  if (!title) return;
+  title.textContent = `Step ${s.n} · ${s.title}`;
+  const pill = document.getElementById('heroPill');
+  pill.className = `pill ${s.pill}`;
+  pill.textContent = `${s.glyph} ${s.label}`;
+  const box = document.getElementById('heroBox');
+  box.style.left = s.box.left;
+  box.style.top = s.box.top;
+  box.style.width = s.box.width;
+  box.style.height = s.box.height;
+  document.getElementById('heroCap').textContent = `Video ${s.time} · key area highlighted`;
+  document.querySelectorAll('.hero-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === heroIndex);
+  });
+  const frame = document.getElementById('heroFrame');
+  frame.classList.remove('scan');
+  void frame.offsetWidth;
+  frame.classList.add('scan');
+}
+
+export function setHeroStep(i) {
+  heroIndex = ((i % HERO_DEMO_STEPS.length) + HERO_DEMO_STEPS.length) % HERO_DEMO_STEPS.length;
+  renderHeroStep();
+}
+
+export function stopLandingHero() {
+  if (heroTimer) {
+    clearInterval(heroTimer);
+    heroTimer = null;
+  }
+}
+
+export function initLandingHero() {
+  stopLandingHero();
+  if (!document.getElementById('heroCard')) return;
+  renderHeroStep();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  heroTimer = setInterval(() => {
+    const card = document.getElementById('heroCard');
+    if (!card) {
+      stopLandingHero();
+      return;
+    }
+    if (document.hidden || card.matches(':hover, :focus-within')) return;
+    heroIndex = (heroIndex + 1) % HERO_DEMO_STEPS.length;
+    renderHeroStep();
+  }, 3500);
+}
+
+function landingView() {
+  return `
+  <div class="landing">
+    <div class="wrap-wide landing-top">
+      <div class="landing-intro">
+        <p><span class="pill pill-wine">AI safety checks</span></p>
+        <h1 class="landing-title">Did the work match the manual?</h1>
+        <p class="landing-lede">Upload your procedure and a video of the work. ProtocolEye checks each
+          step and shows the proof, so a person can make the final call.</p>
+        <div class="landing-cta-row">
+          <button type="button" class="btn btn-primary btn-lg" data-action="go-new">Try the demo</button>
+        </div>
+      </div>
+      <div class="hero-card" id="heroCard" aria-label="Sample audit playing">
+        <div class="hero-card-head">
+          <p class="hero-card-title" id="heroTitle"></p>
+          <span class="pill pill-green" id="heroPill"></span>
+        </div>
+        <div class="hero-frame" id="heroFrame"><span class="hero-tracked" id="heroBox"></span></div>
+        <p class="hero-cap" id="heroCap"></p>
+        <div class="hero-dots" role="group" aria-label="Sample audit steps">
+          ${HERO_DEMO_STEPS.map((s, i) => `<button type="button" class="hero-dot" data-action="hero-step" data-index="${i}" aria-label="Show step ${s.n}: ${s.title}"></button>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <section class="band" id="how">
+      <div class="wrap-wide">
+        <h2>How an audit works</h2>
+        <p class="section-sub">Four steps, from document to decision.</p>
+        <div class="card-grid-3">
+          <div class="info-card"><span class="num-badge">1</span><h3>Add the procedure</h3><p>Upload your procedure. ProtocolEye splits it into clear steps.</p></div>
+          <div class="info-card"><span class="num-badge">2</span><h3>Add the video</h3><p>Drop in a video or photo, plus audio if the checks are spoken aloud.</p></div>
+          <div class="info-card"><span class="num-badge">3</span><h3>The AI checks each step</h3><p>AI compares each step with what the video and audio show. If it can't tell, it says so.</p></div>
+        </div>
+        <div class="info-card card-wide"><span class="num-badge">4</span><h3>You decide</h3><p>Confirm, reject, or ask for more proof. Every decision is saved.</p></div>
+      </div>
+    </section>
+
+    <section class="band band-white" id="trust">
+      <div class="wrap-wide">
+        <h2>Built so you can check its work</h2>
+        <p class="section-sub">The AI helps. A person always has the last word.</p>
+        <div class="card-grid-3">
+          <div class="info-card"><h3>Proof you can check</h3><p>Every result links back to the step, the video, and the reason.</p></div>
+          <div class="info-card"><h3>A clear record</h3><p>Each result shows which AI made it, and whether it ran on your device or online.</p></div>
+          <div class="info-card"><h3>Works offline</h3><p>No signal? Keep reviewing. Your work syncs when you reconnect.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="wrap-narrow">
+        <h2>See the proof behind every result</h2>
+        <p class="section-sub">Try it with your own procedure.</p>
+        <button type="button" class="btn btn-primary btn-lg" data-action="go-new">Try the demo</button>
+      </div>
+    </section>
+  </div>`;
 }
 
 // ---------------- new inspection ----------------
@@ -60,9 +195,8 @@ function newInspectionView() {
     <p class="page-sub">Push the Frontier · grounded safety audits with Muse Spark + SAM 3.1</p>
 
     <div class="chip-row" style="margin-bottom:24px">
-      <span class="mini-label" style="margin-right:4px">Demos:</span>
-      <button type="button" class="chip" data-action="demo" data-id="loto">Electrical LOTO</button>
-      <button type="button" class="chip chip-purple" data-action="demo" data-id="cnc">CNC Setup Check</button>
+      <span class="mini-label" style="margin-right:4px">Demo:</span>
+      <button type="button" class="chip" data-action="demo" data-id="briefing">Cabin Safety Briefing</button>
     </div>
 
     <div class="field">
@@ -130,29 +264,23 @@ function glyphFor(status) {
   return `<span class="glyph glyph-${status}" title="${STEP_META[status].label}">${STEP_META[status].glyph}</span>`;
 }
 
-function reviewMark(stepIndex) {
-  const r = state.reviews[stepIndex];
-  if (r === 'confirmed') return `<span class="review-mark review-confirmed">✓✓</span>`;
-  if (r === 'rejected') return `<span class="review-mark review-rejected">✗</span>`;
-  if (r === 'needs-evidence') return `<span class="review-mark review-needs-evidence">+</span>`;
-  return '';
-}
-
 function stepsSidebar(result) {
   const items = result.steps.map((s, i) => `
     <button type="button" class="step-btn ${state.selectedStepIndex === i ? 'selected' : ''}" data-action="select-step" data-index="${i}">
-      <span class="num">${s.index}</span>
-      <span class="title">${escapeHtml(s.title)}</span>
-      ${reviewMark(s.index)}
+      <span class="title">${s.index} · ${escapeHtml(s.title)}</span>
       ${glyphFor(s.status)}
     </button>`).join('');
   return `
-  <aside class="glass steps-panel">
-    <h2 class="mini-label" style="padding:0 8px;margin-bottom:12px">Steps</h2>
+  <aside class="steps-panel">
+    <h2>Steps</h2>
     ${items}
-    <p class="legend">✓ supported · ! deviation · ? inconclusive · – not observed.</p>
-    <p class="legend"><strong>${needsReview().length} of ${result.steps.length} need review.</strong></p>
   </aside>`;
+}
+
+function statusCounts(result) {
+  const counts = { supported: 0, deviation: 0, inconclusive: 0, 'not-observed': 0 };
+  for (const s of result.steps) counts[s.status] = (counts[s.status] || 0) + 1;
+  return counts;
 }
 
 function samOverlay() {
@@ -179,23 +307,26 @@ function evidenceBlock() {
         ? `<button type="button" class="frame-pill reaudit" data-action="reaudit" ${state.isRunning ? 'disabled' : ''}>${state.isRunning ? 'Auditing…' : 'Re-audit this frame'}</button>`
         : ''}
     </div>` : '';
+  const audioBody = state.transcript
+    ? `“${escapeHtml(state.transcript.slice(0, 220))}${state.transcript.length > 220 ? '…' : ''}”`
+    : 'No spoken confirmation found for this check.';
   return `
-  <div>
-    <div class="evidence-frame">
-      <img src="${frame.dataUrl}" alt="${escapeHtml(frame.label)}" />
-      ${samOverlay()}
+  <div class="evidence-grid">
+    <div>
+      <div class="evidence-frame">
+        <img src="${frame.dataUrl}" alt="${escapeHtml(frame.label)}" />
+        ${samOverlay()}
+      </div>
+      <div class="evidence-meta">
+        <span class="cap">${escapeHtml(frame.label)}</span>
+        <label class="overlay-toggle"><input type="checkbox" data-toggle="showSam" ${state.showSam ? 'checked' : ''} /> Show tracked component</label>
+      </div>
+      ${pills}
     </div>
-    <div class="evidence-meta">
-      <span class="cap">[${escapeHtml(frame.label)}]</span>
-      <label class="overlay-toggle"><input type="checkbox" data-toggle="showSam" ${state.showSam ? 'checked' : ''} /> Show SAM overlay</label>
+    <div class="audio-card">
+      <p><span class="pill pill-slate">Audio</span></p>
+      <p>${audioBody}</p>
     </div>
-    <div class="source-pills">
-      <span class="src src-doc">Document</span>
-      ${state.isVideoSource ? `<span class="src src-video">Video</span>` : `<span class="src src-photo">Photo</span>`}
-      ${state.transcript ? `<span class="src src-audio">Audio</span>` : ''}
-    </div>
-    ${pills}
-    ${state.transcript ? `<p class="audio-excerpt">Audio: “${escapeHtml(state.transcript.slice(0, 220))}${state.transcript.length > 220 ? '…' : ''}”</p>` : ''}
   </div>`;
 }
 
@@ -216,18 +347,20 @@ function qaBlock(step) {
 function dashboardView() {
   const result = state.auditResult;
   const step = selectedStep();
-  const verdictCls = { Pass: 'verdict-pass', Fail: 'verdict-fail', Caution: 'verdict-caution' }[result.executiveSummary.status];
+  const counts = statusCounts(result);
   const review = state.reviews[step.index];
+  const subtitle = `${state.procedureName} · Inspection ${state.inspectionId}`;
   return `
-  <div class="wrap-wide">
-    ${state.isSamplePreview ? `
-    <div class="sample-banner">Sample preview — explore the review workflow, then
-      <button type="button" class="link" style="font-weight:700" data-action="go-new">run a real inspection</button>.
-    </div>` : ''}
-    <div class="verdict ${verdictCls}">
-      <span class="status">${result.executiveSummary.status}</span>
-      <p class="summary">${escapeHtml(result.executiveSummary.summary)}</p>
-      ${result.meta ? `<span class="meta">${escapeHtml(result.meta.model)} · ${result.meta.latencyMs}ms</span>` : ''}
+  <div class="wrap-wide dash">
+    <div class="dash-head">
+      <h1>Inspection dashboard</h1>
+      <p class="dash-sub">${escapeHtml(subtitle)}</p>
+    </div>
+    <div class="count-row">
+      <span class="pill pill-green">${counts.supported} ✓ Supported</span>
+      <span class="pill pill-red">${counts.deviation} ! Deviation</span>
+      <span class="pill pill-yellow">${counts.inconclusive} ? Inconclusive</span>
+      <span class="pill pill-slate">${counts['not-observed']} – Not observed</span>
     </div>
     <div class="dash-grid">
       ${stepsSidebar(result)}
@@ -237,12 +370,11 @@ function dashboardView() {
           <span class="pill ${{ supported: 'pill-green', deviation: 'pill-red', inconclusive: 'pill-yellow', 'not-observed': 'pill-slate' }[step.status]}">${STEP_META[step.status].glyph} ${STEP_META[step.status].label}</span>
         </div>
         <div>
-          <p class="mini-label">Requirement</p>
+          <p class="req-kicker">Requirement · ${escapeHtml(step.reference || 'SOP')}</p>
           <p class="req-text">${escapeHtml(step.requirement)}</p>
-          ${step.reference ? `<p class="req-ref">${escapeHtml(step.reference)}</p>` : ''}
         </div>
         ${evidenceBlock()}
-        <section class="glass assessment">
+        <section class="assessment">
           <div class="assessment-head">
             <h3>AI assessment</h3>
             <span class="pill pill-slate">Spark 1.3 · remote</span>
@@ -251,7 +383,7 @@ function dashboardView() {
           ${step.notEstablished ? `<p class="not-established">Not established: ${escapeHtml(step.notEstablished)}</p>` : ''}
         </section>
         <div class="review-row">
-          <button type="button" class="btn ${review === 'confirmed' ? 'btn-primary' : ''}" data-action="review" data-value="confirmed">Confirm</button>
+          <button type="button" class="btn btn-primary" data-action="review" data-value="confirmed">Confirm</button>
           <button type="button" class="btn ${review === 'rejected' ? 'btn-red-active' : ''}" data-action="review" data-value="rejected">Reject</button>
           <button type="button" class="btn ${review === 'needs-evidence' ? 'btn-yellow-active' : ''}" data-action="review" data-value="needs-evidence">Needs more evidence</button>
         </div>
@@ -260,7 +392,6 @@ function dashboardView() {
       </div>
     </div>
     ${errorBlock()}
-    <div class="back-link"><button type="button" class="link" data-action="go-new">← Start new inspection</button></div>
   </div>`;
 }
 
@@ -308,10 +439,14 @@ function offlineView() {
 
 export function renderApp() {
   const app = document.getElementById('app');
-  const body = state.view === 'new'
-    ? newInspectionView()
-    : state.auditResult
-      ? dashboardView()
-      : offlineView();
+  const body = state.view === 'landing'
+    ? landingView()
+    : state.view === 'new'
+      ? newInspectionView()
+      : state.auditResult
+        ? dashboardView()
+        : offlineView();
   app.innerHTML = header() + body + footer();
+  if (state.view === 'landing') initLandingHero();
+  else stopLandingHero();
 }

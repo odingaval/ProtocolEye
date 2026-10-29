@@ -1,6 +1,6 @@
 // Event delegation, file handling, and boot.
 import * as store from './store.js';
-import { renderApp } from './views.js';
+import { renderApp, setHeroStep } from './views.js';
 import { convertToWav16kMono, extractPdfText, extractVideoFrames, readImageFile } from './media.js';
 import { deriveProcedureName } from './store.js';
 
@@ -65,6 +65,7 @@ document.addEventListener('click', (e) => {
 
 function handleAction(dataset, e) {
   switch (dataset.action) {
+    case 'go-landing': store.goLanding(); break;
     case 'go-new': store.startNew(); break;
     case 'demo': store.loadDemo(dataset.id); break;
     case 'sop-file': document.getElementById('sopFileInput')?.click(); break;
@@ -82,6 +83,7 @@ function handleAction(dataset, e) {
     case 'run': void store.runInspection(); break;
     case 'rerun': void store.rerunAfterSync(); break;
     case 'preview': store.previewSample(); break;
+    case 'hero-step': setHeroStep(Number(dataset.index)); break;
     case 'select-frame':
       e.stopPropagation();
       store.state.activeFrameIndex = Number(dataset.index);
