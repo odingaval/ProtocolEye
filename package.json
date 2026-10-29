@@ -1,11 +1,11 @@
 {
   "name": "protocol-eye",
   "version": "2.0.0",
-  "description": "Grounded safety compliance audits with Meta Muse Spark, SAM 3.1, and Muse Voice. Zero dependencies.",
+  "description": "Evidence-grounded audits of work against SOPs, with Meta Muse Spark, SAM 3.1, and Muse Voice. Zero dependencies.",
   "type": "module",
   "scripts": {
     "start": "node server/api-server.js",
     "server": "node server/api-server.js",
-    "test": "node --test server/__tests__/meta-client.test.js server/__tests__/dotenv.test.js"
+    "test": "node --test server/__tests__/meta-client.test.js server/__tests__/dotenv.test.js server/__tests__/demo-data.test.js server/__tests__/landing-hero.test.js"
   }
 }
