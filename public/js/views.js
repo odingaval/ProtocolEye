@@ -161,12 +161,12 @@ function landingView() {
 
     <section class="band band-white" id="trust">
       <div class="wrap-wide">
-        <h2>Built so you can check its work</h2>
-        <p class="section-sub">The AI helps. A person always has the last word.</p>
+        <h2>Why you can trust it</h2>
+        <p class="section-sub">The AI suggests. You decide.</p>
         <div class="card-grid-3">
-          <div class="info-card"><h3>Proof you can check</h3><p>Every result links back to the step, the video, and the reason.</p></div>
-          <div class="info-card"><h3>A clear record</h3><p>Each result shows which AI made it, and whether it ran on your device or online.</p></div>
-          <div class="info-card"><h3>Works offline</h3><p>No signal? Keep reviewing. Your work syncs when you reconnect.</p></div>
+          <div class="info-card"><h3>See the proof</h3><p>Every answer shows the exact video moment behind it.</p></div>
+          <div class="info-card"><h3>You make the call</h3><p>Confirm or reject each result. Nothing counts until you say so.</p></div>
+          <div class="info-card"><h3>Works anywhere</h3><p>No internet? Keep going — it syncs when you're back.</p></div>
         </div>
       </div>
     </section>
