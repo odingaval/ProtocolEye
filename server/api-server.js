@@ -16,8 +16,8 @@ import {
   getApiKey,
   callSparkAudit,
   callSparkAsk,
-  callSamSegment,
   callVoiceTranscribe,
+  handleSegment,
 } from './meta-client.js';
 
 loadDotenv();
@@ -70,37 +70,6 @@ function readBody(req) {
     });
     req.on('error', reject);
   });
-}
-
-const DEFAULT_SAFETY_PROMPTS = [
-  'hard hat',
-  'safety vest',
-  'safety glasses',
-  'gloves',
-  'pressure gauge',
-  'valve handle',
-  'warning sign',
-];
-
-async function handleSegment(body) {
-  const { imageBase64, mimeType, prompts } = body || {};
-  if (!imageBase64) throw new Error('imageBase64 is required');
-  const list = Array.isArray(prompts) && prompts.length ? prompts.slice(0, 8) : DEFAULT_SAFETY_PROMPTS.slice(0, 4);
-  const detections = [];
-  const errors = [];
-  for (const prompt of list) {
-    try {
-      const { boxes } = await callSamSegment({
-        imageBase64,
-        mimeType: mimeType || 'image/jpeg',
-        prompt: String(prompt),
-      });
-      if (boxes.length) detections.push({ label: String(prompt), boxes });
-    } catch (e) {
-      errors.push(`${prompt}: ${e.message}`);
-    }
-  }
-  return { detections, promptsUsed: list, samErrors: errors, model: SAM_MODEL };
 }
 
 function serveStatic(pathname, res) {

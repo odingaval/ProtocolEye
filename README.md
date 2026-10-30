@@ -40,6 +40,13 @@ npm start
 The server prints `key: configured` when it picked the key up, and the
 app's header warning disappears.
 
+**Vercel:** the backend runs as serverless functions (`api/*.js`, same
+`/api/*` paths as local). In the Vercel dashboard go to Project →
+Settings → Environment Variables, add `MODEL_API_KEY` for Production,
+then **redeploy** (new vars only apply to new deployments). Verify with
+`https://<your-app>.vercel.app/api/health` — it should return JSON with
+`"ok":true`. Keep narration clips short: very large uploads can exceed
+Vercel's request-size limit.
 
 Without a key, the app still runs: tour the sample dashboard from the
 landing page (**Dashboard** link) or `?preview=sample`, or queue an
@@ -49,7 +56,7 @@ inspection offline.
 
 ```bash
 npm start     # app + API on http://localhost:3001
-npm test      # 36 maintained checks, no runner to install
+npm test      # 54 maintained checks, no runner to install
 npm run build # deploy-time syntax check (used by Vercel)
 ```
 
@@ -103,11 +110,13 @@ weights, so the local pre-check becomes a real preliminary audit.
 │       ├── api.js          # /api/* client
 │       ├── media.js        # frame extraction, WAV conversion, PDF text
 │       └── demo-data.js    # briefing demo SOP + labeled sample preview
+├── api/                    # Vercel serverless routes (same /api/* paths)
 ├── server/
 │   ├── api-server.js       # static server + Meta API proxy (zero deps)
 │   ├── meta-client.js      # Spark / SAM / Voice calls + parsers
+│   ├── vercel-lib.js       # shared helpers for the api/* routes
 │   ├── dotenv.js           # .env loader
-│   └── __tests__/          # npm test (36 checks)
+│   └── __tests__/          # npm test (54 checks)
 ├── demo/                   # demo video script
 ├── .env.example            # copy to .env and add MODEL_API_KEY
 └── package.json            # scripts only — zero dependencies
