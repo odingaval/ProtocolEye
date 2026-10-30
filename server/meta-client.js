@@ -189,6 +189,19 @@ export function buildAskMessages({ question, step, sopText, audioTranscript, ima
   ];
 }
 
+/** Pull answer text from a chat-completion payload, tolerating shape variants. */
+export function extractChatText(data) {
+  const choice = data?.choices?.[0];
+  const content = choice?.message?.content;
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    return content.map((b) => (typeof b?.text === 'string' ? b.text : '')).join('');
+  }
+  if (typeof choice?.text === 'string') return choice.text;
+  if (typeof data?.output_text === 'string') return data.output_text;
+  return '';
+}
+
 export async function callSparkAsk(args) {
   const apiKey = getApiKey();
   if (!apiKey) throw new Error('MODEL_API_KEY is not set on the server');
@@ -208,9 +221,16 @@ export async function callSparkAsk(args) {
     throw new Error(`Meta Model API error ${res.status}: ${body.slice(0, 300)}`);
   }
   const data = await res.json();
-  const content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error('Empty answer from model');
-  return String(content).trim();
+  const text = extractChatText(data).trim();
+  if (!text) {
+    const choices = data?.choices;
+    const reason = choices?.[0]?.finish_reason;
+    const detail = !Array.isArray(choices) || !choices.length
+      ? ' (no choices returned)'
+      : reason ? ` (finish_reason: ${reason})` : '';
+    throw new Error(`Empty answer from model${detail}`);
+  }
+  return text;
 }
 
 // --- Voice transcription (Muse Voice Transcribe, file endpoint) ---

@@ -56,7 +56,7 @@ inspection offline.
 
 ```bash
 npm start     # app + API on http://localhost:3001
-npm test      # 61 maintained checks, no runner to install
+npm test      # 66 maintained checks, no runner to install
 npm run build # deploy-time syntax check (used by Vercel)
 ```
 
@@ -116,7 +116,7 @@ weights, so the local pre-check becomes a real preliminary audit.
 │   ├── meta-client.js      # Spark / SAM / Voice calls + parsers
 │   ├── vercel-lib.js       # shared helpers for the api/* routes
 │   ├── dotenv.js           # .env loader
-│   └── __tests__/          # npm test (61 checks)
+│   └── __tests__/          # npm test (66 checks)
 ├── demo/                   # demo video script
 ├── .env.example            # copy to .env and add MODEL_API_KEY
 └── package.json            # scripts only — zero dependencies

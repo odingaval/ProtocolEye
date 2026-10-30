@@ -12,6 +12,7 @@ import {
   callSparkAsk,
   callSparkAudit,
   callVoiceTranscribe,
+  extractChatText,
   extractJson,
   extractResponsesText,
   extractTranscript,
@@ -276,6 +277,86 @@ describe('callSparkAsk (mocked fetch)', () => {
       fetchImpl,
     });
     assert.equal(answer, 'Because the handle is bare.');
+  });
+
+  it('joins content-block parts when content is an array', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: { content: [{ type: 'text', text: 'The ' }, { type: 'text', text: 'handle is bare.' }] },
+        }],
+      }),
+    });
+    const answer = await callSparkAsk({
+      question: 'Why deviation?',
+      step: { index: 1, title: 't', requirement: 'r', status: 'deviation', assessment: 'a' },
+      sopText: 'SOP',
+      fetchImpl,
+    });
+    assert.equal(answer, 'The handle is bare.');
+  });
+
+  it('names finish_reason when content is empty', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: '' }, finish_reason: 'length' }] }),
+    });
+    await assert.rejects(
+      callSparkAsk({
+        question: 'Why deviation?',
+        step: { index: 1, title: 't', requirement: 'r', status: 'deviation', assessment: 'a' },
+        sopText: 'SOP',
+        fetchImpl,
+      }),
+      /Empty answer from model \(finish_reason: length\)/,
+    );
+  });
+
+  it('says no choices when the list is empty', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => ({ choices: [] }),
+    });
+    await assert.rejects(
+      callSparkAsk({
+        question: 'Why deviation?',
+        step: { index: 1, title: 't', requirement: 'r', status: 'deviation', assessment: 'a' },
+        sopText: 'SOP',
+        fetchImpl,
+      }),
+      /Empty answer from model \(no choices returned\)/,
+    );
+  });
+
+  it('keeps the plain message on a bare empty answer', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => ({ choices: [{ message: {} }] }),
+    });
+    await assert.rejects(
+      callSparkAsk({
+        question: 'Why deviation?',
+        step: { index: 1, title: 't', requirement: 'r', status: 'deviation', assessment: 'a' },
+        sopText: 'SOP',
+        fetchImpl,
+      }),
+      /^Error: Empty answer from model$/,
+    );
+  });
+});
+
+describe('extractChatText', () => {
+  it('reads the standard lane and the legacy fallbacks', () => {
+    assert.equal(extractChatText({ choices: [{ message: { content: ' hi ' } }] }), ' hi ');
+    assert.equal(extractChatText({ choices: [{ text: 'legacy' }] }), 'legacy');
+    assert.equal(extractChatText({ output_text: 'lane' }), 'lane');
+    assert.equal(extractChatText({ choices: [] }), '');
+    assert.equal(extractChatText(null), '');
   });
 });
 
