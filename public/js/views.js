@@ -301,11 +301,9 @@ function evidenceBlock() {
     <div class="frame-pills">
       ${state.frames.map((f, i) => `
         <button type="button" class="frame-pill ${state.activeFrameIndex === i ? 'selected' : ''}" data-action="select-frame-dash" data-index="${i}">
-          ${escapeHtml(f.label)}${state.auditedFrameIndex === i ? ' · audited' : ''}
+          ${escapeHtml(f.label)} · audited
         </button>`).join('')}
-      ${state.activeFrameIndex !== state.auditedFrameIndex
-        ? `<button type="button" class="frame-pill reaudit" data-action="reaudit" ${state.isRunning ? 'disabled' : ''}>${state.isRunning ? 'Auditing…' : 'Re-audit this frame'}</button>`
-        : ''}
+      <button type="button" class="frame-pill reaudit" data-action="reaudit" ${state.isRunning ? 'disabled' : ''}>${state.isRunning ? 'Auditing…' : 'Re-run audit'}</button>
     </div>` : '';
   const audioBody = state.transcript
     ? `“${escapeHtml(state.transcript.slice(0, 220))}${state.transcript.length > 220 ? '…' : ''}”`
@@ -380,6 +378,7 @@ function dashboardView() {
             <span class="pill pill-slate">Spark 1.3 · remote</span>
           </div>
           <p>${escapeHtml(step.assessment)}</p>
+          ${step.observedIn?.length ? `<p class="hint">Seen in: ${escapeHtml(step.observedIn.join(', '))}</p>` : ''}
           ${step.notEstablished ? `<p class="not-established">Not established: ${escapeHtml(step.notEstablished)}</p>` : ''}
         </section>
         <div class="review-row">

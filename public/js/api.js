@@ -21,21 +21,25 @@ export async function segmentEvidence(imageBase64, mimeType, prompts) {
   return res.detections || [];
 }
 
-export async function auditProcedure({ imageBase64, sopText, mimeType, detections, audioTranscript, evidenceLabel }) {
-  const result = await post('/api/audit', {
-    sopText, imageBase64, mimeType: mimeType || 'image/jpeg',
+export async function auditProcedure({ frames, imageBase64, sopText, mimeType, detections, audioTranscript, evidenceLabel }) {
+  const body = {
+    sopText, mimeType: mimeType || 'image/jpeg',
     detections, audioTranscript: audioTranscript || undefined, evidenceLabel,
-  });
+  };
+  if (frames) body.frames = frames;
+  else body.imageBase64 = imageBase64;
+  const result = await post('/api/audit', body);
   if (!result?.executiveSummary?.status || !Array.isArray(result.steps)) {
     throw new Error('Invalid audit response from server');
   }
   return result;
 }
 
-export async function askAboutStep({ question, step, sopText, imageBase64, audioTranscript }) {
+export async function askAboutStep({ question, step, sopText, frames, imageBase64, audioTranscript }) {
   const res = await post('/api/ask', {
     question, step, sopText,
-    imageBase64, audioTranscript: audioTranscript || undefined,
+    frames: frames || undefined, imageBase64: frames ? undefined : imageBase64,
+    audioTranscript: audioTranscript || undefined,
   });
   return res.answer;
 }

@@ -95,6 +95,9 @@ function saveQueue() {
 // ---------- derived ----------
 export const activeFrame = () => state.frames[state.activeFrameIndex] ?? null;
 export const canRun = () => !!state.sopText.trim() && Boolean(activeFrame()?.base64) && !state.isRunning;
+export const auditFrames = () => state.frames
+  .filter((f) => f.base64)
+  .map((f) => ({ imageBase64: f.base64, mimeType: 'image/jpeg', label: f.label }));
 export const selectedStep = () => state.auditResult?.steps[state.selectedStepIndex] ?? null;
 export const detectionCount = () => state.detections.reduce((n, d) => n + d.boxes.length, 0);
 export const needsReview = () => {
@@ -203,13 +206,12 @@ export async function runInspection() {
 
     state.stage = 'Auditing steps with Muse Spark…';
     render();
+    const groundedForAudit = grounded.map((d) => ({ ...d, frame: frame.label }));
     const result = await api.auditProcedure({
-      imageBase64: frame.base64,
+      frames: auditFrames(),
       sopText: state.sopText,
-      mimeType: 'image/jpeg',
-      detections: grounded,
+      detections: groundedForAudit,
       audioTranscript: state.transcript,
-      evidenceLabel: frame.label,
     });
     state.auditResult = result;
     state.auditedFrameIndex = state.activeFrameIndex;
@@ -239,14 +241,11 @@ export async function reAuditActiveFrame() {
   state.error = null;
   render();
   try {
-    const frame = activeFrame();
     const result = await api.auditProcedure({
-      imageBase64: frame.base64,
+      frames: auditFrames(),
       sopText: state.sopText,
-      mimeType: 'image/jpeg',
       detections: state.detections,
       audioTranscript: state.transcript,
-      evidenceLabel: frame.label,
     });
     state.auditResult = result;
     state.auditedFrameIndex = state.activeFrameIndex;
@@ -298,7 +297,7 @@ export async function askQuestion() {
       question: q,
       step,
       sopText: state.sopText,
-      imageBase64: activeFrame()?.base64,
+      frames: auditFrames(),
       audioTranscript: state.transcript,
     });
     appendQA(step.index, q, answer);
@@ -392,6 +391,7 @@ export function exportReport() {
     <h2>Step ${s.index} — ${escapeHtml(s.title)} [${s.status}]${reviews[s.index] ? ` (reviewer: ${reviews[s.index]})` : ''}</h2>
     <p>${escapeHtml(s.assessment)}</p>
     ${s.reference ? `<p class="print-meta">Ref: ${escapeHtml(s.reference)}</p>` : ''}
+    ${s.observedIn?.length ? `<p class="print-meta">Seen in: ${escapeHtml(s.observedIn.join(', '))}</p>` : ''}
     ${s.notEstablished ? `<p class="print-meta">Not established: ${escapeHtml(s.notEstablished)}</p>` : ''}
   `).join('');
   document.getElementById('print-root').innerHTML = `

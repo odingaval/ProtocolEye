@@ -107,3 +107,34 @@ describe('reAuditActiveFrame evidence guard', () => {
     assert.equal(state.isRunning, false);
   });
 });
+
+describe('runInspection multi-frame wiring', () => {
+  it('posts every frame with labels in one audit call', async () => {
+    state.sopText = 'SOP text';
+    state.frames = [
+      { dataUrl: 'x', base64: 'AAA', label: 'Video frame · 00:00:05' },
+      { dataUrl: 'y', base64: 'BBB', label: 'Video frame · 00:00:10' },
+    ];
+    state.activeFrameIndex = 0;
+    state.useSam = false;
+    state.useVoice = false;
+    let seenBody;
+    globalThis.fetch = async (url, opts) => {
+      assert.ok(String(url).endsWith('/api/audit'));
+      seenBody = JSON.parse(opts.body);
+      return {
+        ok: true,
+        json: async () => ({
+          executiveSummary: { status: 'Pass', summary: 'All seen.' },
+          steps: [{ index: 1, title: 'Belt', requirement: 'Demo the belt.', status: 'supported', assessment: 'Visible.', observedIn: ['Video frame · 00:00:05'] }],
+        }),
+      };
+    };
+    await runInspection();
+    assert.equal(seenBody.frames.length, 2);
+    assert.equal(seenBody.frames[0].imageBase64, 'AAA');
+    assert.equal(seenBody.frames[1].label, 'Video frame · 00:00:10');
+    assert.equal(state.view, 'dashboard');
+    assert.deepEqual(state.auditResult.steps[0].observedIn, ['Video frame · 00:00:05']);
+  });
+});

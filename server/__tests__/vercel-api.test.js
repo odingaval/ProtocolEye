@@ -192,3 +192,13 @@ describe('getBody stream fallback', () => {
     assert.deepEqual(await getBody(req), {});
   });
 });
+
+describe('api/audit frames', () => {
+  it('returns 400 when frames carry no image data', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    const res = mockRes();
+    await audit(mockReq({ method: 'POST', body: { sopText: 'SOP', frames: [{ label: 'empty' }] } }), res);
+    assert.equal(res.statusCode, 400);
+    assert.match(json(res).error, /required/);
+  });
+});

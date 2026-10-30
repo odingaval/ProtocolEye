@@ -14,6 +14,7 @@ export default async function handler(req, res) {
       step: body?.step,
       sopText: body?.sopText || '',
       audioTranscript: body?.audioTranscript,
+      frames: body?.frames,
       imageBase64: body?.imageBase64,
       mimeType: body?.mimeType || 'image/jpeg',
     });

@@ -42,6 +42,7 @@ export const AUDIT_JSON_SCHEMA = {
           reference: { type: 'string' },
           status: { type: 'string', enum: STEP_STATUSES },
           assessment: { type: 'string' },
+          observedIn: { type: 'array', items: { type: 'string' } },
           notEstablished: { type: 'string' },
         },
         required: ['index', 'title', 'requirement', 'status', 'assessment'],
@@ -54,17 +55,20 @@ export const AUDIT_JSON_SCHEMA = {
   additionalProperties: false,
 };
 
-const SYSTEM_PROMPT = `You are the "ProtocolEye Multimodal Audit Agent" powered by Meta Muse Spark. You audit industrial safety procedures (factory floor, lab, field site) by comparing a Standard Operating Procedure against visual evidence and an optional audio transcript. Be professional, objective, and slightly skeptical.
+const SYSTEM_PROMPT = `You are the "ProtocolEye Multimodal Audit Agent" powered by Meta Muse Spark. You audit industrial safety procedures (factory floor, lab, field site) by comparing a Standard Operating Procedure against visual evidence frames and an optional audio transcript. Be professional, objective, and slightly skeptical.
 
-First enumerate the SOP as discrete verifiable steps (at most 8; merge trivial sub-steps). Then assess EACH step against the evidence with exactly one status:
-- "supported": the evidence clearly shows the step was followed.
-- "deviation": the evidence clearly shows the step was NOT followed.
-- "inconclusive": the evidence is ambiguous, partial, or too low quality to judge.
-- "not-observed": the evidence does not cover this step at all.
+You receive the evidence as an ordered frame list and the images follow the same order. First enumerate the SOP as discrete verifiable steps (at most 8; merge trivial sub-steps). Then assess EACH step against ALL frames with exactly one status:
+- "supported": at least one frame clearly shows the step was followed, and no frame clearly shows it violated.
+- "deviation": at least one frame clearly shows the step was NOT followed (even if another frame looks compliant — name both frames).
+- "inconclusive": the frames covering this step are ambiguous, partial, or too low quality to judge.
+- "not-observed": no frame covers this step at all.
 
-Rules: base findings ONLY on the provided SOP, image, grounding, and transcript. Never hallucinate unseen details. The one-sentence "assessment" states why this status. "notEstablished" names what the evidence cannot show for this step (empty string if fully established). Overall status: Fail if any deviation, Caution if any inconclusive/not-observed but no deviation, else Pass.`;
+Rules: base findings ONLY on the provided SOP, images, grounding, and transcript. Never hallucinate unseen details. The one-sentence "assessment" states why this status. "observedIn" lists the frame labels backing the verdict (empty array when not-observed). "notEstablished" names what the evidence cannot show for this step (empty string if fully established). Overall status: Fail if any deviation, Caution if any inconclusive/not-observed but no deviation, else Pass.`;
 
 export function buildAuditMessages(sopText, imageBase64, mimeType, detections, audioTranscript, evidenceLabel) {
+  const frames = Array.isArray(imageBase64)
+    ? imageBase64.filter((f) => f && f.imageBase64)
+    : [{ imageBase64, mimeType, label: evidenceLabel }];
   const grounding =
     detections && detections.length
       ? `\n\nVISUAL GROUNDING (SAM 3.1 detections, normalized 0-1000 boxes):\n${JSON.stringify(detections).slice(0, 4000)}\nUse these to reference WHERE each finding appears; still verify against the pixels.`
@@ -72,22 +76,22 @@ export function buildAuditMessages(sopText, imageBase64, mimeType, detections, a
   const audio = audioTranscript
     ? `\n\nAUDIO TRANSCRIPT (spoken during the procedure, may be partial):\n${String(audioTranscript).slice(0, 2000)}`
     : '';
-  const label = evidenceLabel ? `\nEvidence: ${evidenceLabel}.` : '';
+  const frameList = frames.map((f, i) => `${i + 1}. ${f.label || `Frame ${i + 1}`}`).join('\n');
+  const content = [
+    {
+      type: 'text',
+      text: `SOP TEXT:\n---\n${sopText}\n---\n\nEVIDENCE FRAMES (images attached in this order):\n${frameList}${grounding}${audio}\n\nEnumerate the SOP steps and assess each against ALL attached frames. Return the audit report as JSON matching the schema.`,
+    },
+  ];
+  for (const f of frames) {
+    content.push({
+      type: 'image_url',
+      image_url: { url: `data:${f.mimeType || 'image/jpeg'};base64,${f.imageBase64}` },
+    });
+  }
   return [
     { role: 'system', content: SYSTEM_PROMPT },
-    {
-      role: 'user',
-      content: [
-        {
-          type: 'text',
-          text: `SOP TEXT:\n---\n${sopText}\n---${grounding}${audio}${label}\n\nEnumerate the SOP steps and assess each against the attached image. Return the audit report as JSON matching the schema.`,
-        },
-        {
-          type: 'image_url',
-          image_url: { url: `data:${mimeType};base64,${imageBase64}` },
-        },
-      ],
-    },
+    { role: 'user', content },
   ];
 }
 
@@ -124,16 +128,19 @@ export function normalizeAudit(parsed) {
       reference: s?.reference ? String(s.reference) : undefined,
       status: STEP_STATUSES.includes(s?.status) ? s.status : 'inconclusive',
       assessment: String(s?.assessment || ''),
+      observedIn: Array.isArray(s?.observedIn) ? s.observedIn.map((f) => String(f)) : undefined,
       notEstablished: s?.notEstablished ? String(s.notEstablished) : undefined,
     })),
     reasoningTrace: parsed?.reasoningTrace ? String(parsed.reasoningTrace) : undefined,
   };
 }
 
-export async function callSparkAudit({ sopText, imageBase64, mimeType, detections, audioTranscript, evidenceLabel, fetchImpl = fetch }) {
+export async function callSparkAudit({ sopText, imageBase64, mimeType, frames, detections, audioTranscript, evidenceLabel, fetchImpl = fetch }) {
   const apiKey = getApiKey();
   if (!apiKey) throw new Error('MODEL_API_KEY is not set on the server');
-  if (!sopText || !imageBase64) throw new Error('sopText and imageBase64 are required');
+  const provided = Array.isArray(frames) ? frames.filter((f) => f && f.imageBase64) : [];
+  const auditFrames = provided.length ? provided : (imageBase64 ? [{ imageBase64, mimeType, label: evidenceLabel }] : []);
+  if (!sopText || !auditFrames.length) throw new Error('sopText and imageBase64 are required');
 
   const res = await fetchImpl(`${META_BASE_URL}/chat/completions`, {
     method: 'POST',
@@ -143,10 +150,7 @@ export async function callSparkAudit({ sopText, imageBase64, mimeType, detection
     },
     body: JSON.stringify({
       model: SPARK_MODEL,
-      messages: buildAuditMessages(
-        sopText, imageBase64, mimeType || 'image/jpeg',
-        detections, audioTranscript, evidenceLabel
-      ),
+      messages: buildAuditMessages(sopText, auditFrames, null, detections, audioTranscript),
       response_format: {
         type: 'json_schema',
         json_schema: { name: 'ProtocolEyeAudit', schema: AUDIT_JSON_SCHEMA },
@@ -165,7 +169,7 @@ export async function callSparkAudit({ sopText, imageBase64, mimeType, detection
 
 // --- Per-step Q&A ("Ask about this step") ---
 
-export function buildAskMessages({ question, step, sopText, audioTranscript, imageBase64, mimeType }) {
+export function buildAskMessages({ question, step, sopText, audioTranscript, imageBase64, mimeType, frames }) {
   const context = [
     `SOP step ${step.index} — ${step.title}: ${step.requirement}`,
     `Current assessment (${step.status}): ${step.assessment}`,
@@ -174,13 +178,19 @@ export function buildAskMessages({ question, step, sopText, audioTranscript, ima
   ]
     .filter(Boolean)
     .join('\n');
+  const askFrames = Array.isArray(frames)
+    ? frames.filter((f) => f && f.imageBase64)
+    : (imageBase64 ? [{ imageBase64, mimeType }] : []);
+  const frameNote = Array.isArray(frames) && askFrames.some((f) => f.label)
+    ? `\nEvidence frames (images in this order): ${askFrames.map((f, i) => f.label || `Frame ${i + 1}`).join(', ')}`
+    : '';
   const userContent = [
-    { type: 'text', text: `Context:\n${context}\n\nSOP (may be truncated):\n${String(sopText).slice(0, 3000)}\n\nQuestion: ${question}\n\nAnswer in 2-3 sentences, grounded only in the evidence. If the evidence cannot answer it, say so.` },
+    { type: 'text', text: `Context:\n${context}${frameNote}\n\nSOP (may be truncated):\n${String(sopText).slice(0, 3000)}\n\nQuestion: ${question}\n\nAnswer in 2-3 sentences, grounded only in the evidence. If the evidence cannot answer it, say so.` },
   ];
-  if (imageBase64) {
+  for (const f of askFrames) {
     userContent.push({
       type: 'image_url',
-      image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${imageBase64}` },
+      image_url: { url: `data:${f.mimeType || 'image/jpeg'};base64,${f.imageBase64}` },
     });
   }
   return [

@@ -127,6 +127,7 @@ export function createServer() {
         const t0 = Date.now();
         const result = await callSparkAudit({
           sopText: body?.sopText,
+          frames: body?.frames,
           imageBase64: body?.imageBase64,
           mimeType: body?.mimeType || 'image/jpeg',
           detections: body?.detections,
@@ -143,6 +144,7 @@ export function createServer() {
           step: body?.step,
           sopText: body?.sopText || '',
           audioTranscript: body?.audioTranscript,
+          frames: body?.frames,
           imageBase64: body?.imageBase64,
           mimeType: body?.mimeType || 'image/jpeg',
         });

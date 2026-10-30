@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     const t0 = Date.now();
     const result = await callSparkAudit({
       sopText: body?.sopText,
+      frames: body?.frames,
       imageBase64: body?.imageBase64,
       mimeType: body?.mimeType || 'image/jpeg',
       detections: body?.detections,

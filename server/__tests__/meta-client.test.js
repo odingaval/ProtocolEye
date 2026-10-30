@@ -409,3 +409,75 @@ describe('callSamSegment (mocked fetch)', () => {
     assert.equal(boxes[0].nx2, 200);
   });
 });
+
+describe('multi-frame audit', () => {
+  it('buildAuditMessages lists frames in order with one image part each', () => {
+    const msgs = buildAuditMessages('SOP', [
+      { imageBase64: 'AAA', mimeType: 'image/jpeg', label: 'Video frame · 00:00:05' },
+      { imageBase64: 'BBB', mimeType: 'image/jpeg', label: 'Video frame · 00:00:10' },
+    ]);
+    const user = msgs[1];
+    assert.ok(user.content[0].text.includes('1. Video frame · 00:00:05'));
+    assert.ok(user.content[0].text.includes('2. Video frame · 00:00:10'));
+    assert.equal(user.content.length, 3);
+    assert.equal(user.content[1].image_url.url, 'data:image/jpeg;base64,AAA');
+    assert.equal(user.content[2].image_url.url, 'data:image/jpeg;base64,BBB');
+  });
+
+  it('callSparkAudit sends every frame and keeps observedIn', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    let seenBody;
+    const fetchImpl = async (url, opts) => {
+      seenBody = JSON.parse(opts.body);
+      return {
+        ok: true,
+        json: async () => ({
+          choices: [{ message: { content: JSON.stringify({
+            executiveSummary: { status: 'Pass', summary: 'Seen.' },
+            steps: [{ index: 1, title: 'Belt', requirement: 'Demo the belt.', status: 'supported', assessment: 'Belt demo visible.', observedIn: ['Video frame · 00:00:05'] }],
+          }) } }],
+        }),
+      };
+    };
+    const out = await callSparkAudit({
+      sopText: 'SOP',
+      frames: [
+        { imageBase64: 'AAA', mimeType: 'image/jpeg', label: 'Video frame · 00:00:05' },
+        { imageBase64: 'BBB', mimeType: 'image/jpeg', label: 'Video frame · 00:00:10' },
+      ],
+      fetchImpl,
+    });
+    const images = seenBody.messages[1].content.filter((c) => c.type === 'image_url');
+    assert.equal(images.length, 2);
+    assert.deepEqual(out.steps[0].observedIn, ['Video frame · 00:00:05']);
+  });
+
+  it('callSparkAudit rejects frames without image data', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    await assert.rejects(
+      () => callSparkAudit({ sopText: 'SOP', frames: [{ label: 'empty' }], fetchImpl: async () => ({}) }),
+      /required/,
+    );
+  });
+
+  it('normalizeAudit passes observedIn through and drops non-arrays', () => {
+    const base = { executiveSummary: { status: 'Pass', summary: 's' }, steps: [] };
+    const withObs = normalizeAudit({ ...base, steps: [{ index: 1, title: 't', requirement: 'r', status: 'supported', assessment: 'a', observedIn: ['F1', 7] }] });
+    assert.deepEqual(withObs.steps[0].observedIn, ['F1', '7']);
+    const without = normalizeAudit({ ...base, steps: [{ index: 1, title: 't', requirement: 'r', status: 'supported', assessment: 'a' }] });
+    assert.equal(without.steps[0].observedIn, undefined);
+  });
+});
+
+describe('multi-frame ask', () => {
+  it('buildAskMessages attaches every labeled frame in order', () => {
+    const step = { index: 1, title: 't', requirement: 'r', status: 'supported', assessment: 'a' };
+    const msgs = buildAskMessages({ question: 'Q?', step, sopText: 'SOP', frames: [
+      { imageBase64: 'AAA', mimeType: 'image/jpeg', label: 'Frame A' },
+      { imageBase64: 'BBB', mimeType: 'image/jpeg', label: 'Frame B' },
+    ] });
+    assert.equal(msgs[1].content.length, 3);
+    assert.ok(msgs[1].content[0].text.includes('Frame A, Frame B'));
+    assert.equal(msgs[1].content[2].image_url.url, 'data:image/jpeg;base64,BBB');
+  });
+});
