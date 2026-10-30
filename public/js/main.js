@@ -1,7 +1,7 @@
 // Event delegation, file handling, and boot.
 import * as store from './store.js';
 import { renderApp, setHeroStep } from './views.js';
-import { convertToWav16kMono, extractPdfText, extractVideoFrames, readImageFile } from './media.js';
+import { convertToWav16kMono, extractPdfText, extractVideoAudio, extractVideoFrames, readImageFile } from './media.js';
 import { deriveProcedureName } from './store.js';
 
 store.onRender(renderApp);
@@ -74,6 +74,8 @@ function handleAction(dataset, e) {
     case 'audio-clear':
       store.state.audioWavBase64 = null;
       store.state.audioFileName = null;
+      store.state.audioFromVideo = false;
+      store.state.videoAudioNote = null;
       store.render();
       break;
     case 'toggle-analysis':
@@ -154,11 +156,18 @@ async function handleEvidenceFile(file) {
       store.state.preparingMedia = 'Extracting frames from video…';
       store.render();
       store.setEvidence(await extractVideoFrames(file, 3), true);
+      if (!store.state.audioWavBase64 || store.state.audioFromVideo) {
+        store.state.preparingMedia = 'Listening for narration in the video…';
+        store.state.videoAudioNote = null;
+        store.render();
+        store.applyVideoAudio(await extractVideoAudio(file));
+      }
     } else if (file.type.startsWith('image/')) {
       store.state.preparingMedia = 'Preparing photo…';
       store.render();
       const { dataUrl, base64 } = await readImageFile(file);
       store.setEvidence([{ dataUrl, base64, timestamp: null, label: 'Photo evidence' }], false);
+      store.dropVideoAudio();
     } else {
       store.state.error = 'Evidence must be an image or a video file.';
       store.render();
@@ -179,8 +188,7 @@ async function handleAudioFile(file) {
     store.state.preparingMedia = 'Converting audio for transcription…';
     store.render();
     const wav = await convertToWav16kMono(file);
-    store.state.audioWavBase64 = wav.base64;
-    store.state.audioFileName = wav.fileName;
+    store.setExplicitAudio(wav);
   } catch {
     store.state.error = 'Could not decode that audio file. Try WAV, MP3, M4A, or OGG.';
   } finally {

@@ -48,6 +48,8 @@ export const state = {
   isVideoSource: false,
   audioFileName: null,
   audioWavBase64: null,
+  audioFromVideo: false,
+  videoAudioNote: null,
   transcript: null,
   // toggles
   useSam: true,
@@ -143,6 +145,41 @@ export function setEvidence(frames, isVideo) {
   state.isVideoSource = isVideo;
   state.detections = [];
   state.samStatus = 'idle';
+  render();
+}
+
+export function setExplicitAudio(wav) {
+  state.audioWavBase64 = wav.base64;
+  state.audioFileName = wav.fileName;
+  state.audioFromVideo = false;
+  state.videoAudioNote = null;
+  render();
+}
+
+/** Store an auto-extracted video soundtrack, or note that the video has none. Never touches an explicit upload. */
+export function applyVideoAudio(track) {
+  if (track) {
+    state.audioWavBase64 = track.base64;
+    state.audioFileName = track.fileName;
+    state.audioFromVideo = true;
+    state.videoAudioNote = null;
+  } else {
+    if (!state.audioFromVideo && state.audioWavBase64) return;
+    state.audioWavBase64 = null;
+    state.audioFileName = null;
+    state.audioFromVideo = false;
+    state.videoAudioNote = 'No usable narration found in this video — auditing the pictures only.';
+  }
+  render();
+}
+
+/** Drop video-derived audio when evidence is replaced by a photo. */
+export function dropVideoAudio() {
+  if (!state.audioFromVideo) return;
+  state.audioWavBase64 = null;
+  state.audioFileName = null;
+  state.audioFromVideo = false;
+  state.videoAudioNote = null;
   render();
 }
 
@@ -366,6 +403,8 @@ export function startNew() {
     state.isVideoSource = false;
     state.audioFileName = null;
     state.audioWavBase64 = null;
+    state.audioFromVideo = false;
+    state.videoAudioNote = null;
     state.transcript = null;
     state.procedureName = 'Untitled procedure';
   }

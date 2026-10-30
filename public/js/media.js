@@ -104,22 +104,44 @@ export function readImageFile(file, maxWidth = 1600) {
  * Convert any browser-decodable audio file to mono 16-bit PCM WAV at 16kHz,
  * the format Muse Voice Transcribe expects.
  */
-export async function convertToWav16kMono(file) {
+async function decodeToWav16kMono(arrayBuffer, maxSeconds) {
   const ctx = new AudioContext();
   try {
-    const raw = await file.arrayBuffer();
-    const decoded = await ctx.decodeAudioData(raw);
+    const decoded = await ctx.decodeAudioData(arrayBuffer);
     const targetRate = 16000;
-    const offline = new OfflineAudioContext(1, Math.ceil(decoded.duration * targetRate), targetRate);
+    const seconds = Math.min(decoded.duration, maxSeconds);
+    const offline = new OfflineAudioContext(1, Math.ceil(seconds * targetRate), targetRate);
     const src = offline.createBufferSource();
     src.buffer = decoded;
     src.connect(offline.destination);
     src.start(0);
     const rendered = await offline.startRendering();
     const wav = encodeWav(rendered.getChannelData(0), targetRate);
-    return { base64: arrayBufferToBase64(wav), fileName: file.name.replace(/\.[^.]+$/, '') + '.wav' };
+    return { base64: arrayBufferToBase64(wav), durationSeconds: decoded.duration };
   } finally {
     await ctx.close().catch(() => undefined);
+  }
+}
+
+export async function convertToWav16kMono(file) {
+  const raw = await file.arrayBuffer();
+  const { base64 } = await decodeToWav16kMono(raw, Infinity);
+  return { base64, fileName: file.name.replace(/\.[^.]+$/, '') + '.wav' };
+}
+
+/**
+ * Pull the narration track out of a video file (same WAV format as uploads,
+ * capped to the first minutes). Returns null when the video has no usable
+ * audio — callers fall back to video-only.
+ */
+export async function extractVideoAudio(file, maxSeconds = 300) {
+  try {
+    const raw = await file.arrayBuffer();
+    const { base64, durationSeconds } = await decodeToWav16kMono(raw, maxSeconds);
+    if (!durationSeconds || durationSeconds < 0.5) return null;
+    return { base64, fileName: file.name.replace(/\.[^.]+$/, '') + '.wav' };
+  } catch {
+    return null;
   }
 }
 

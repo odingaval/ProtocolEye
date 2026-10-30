@@ -224,15 +224,17 @@ function newInspectionView() {
             ? `<div class="frame-strip" data-stop="1">${frames}</div>
                <p class="hint" style="margin-top:12px">Click a frame to audit it · click elsewhere here to replace evidence</p>`
             : `<p class="dropzone-title">Drop video or photo here, or click to browse</p>
-               <p class="dropzone-sub">Video → key frames are extracted in your browser · images up to 1600px</p>`}
+               <p class="dropzone-sub">Video → frames + narration are extracted in your browser · images up to 1600px</p>`}
         <input type="file" id="evidenceFileInput" accept="image/*,video/*" hidden />
       </div>
       <div class="audio-row">
         <button type="button" class="btn" data-action="audio-file">+ Audio <span style="font-weight:400;color:var(--muted)">(optional)</span></button>
         <input type="file" id="audioFileInput" accept="audio/*" hidden />
         ${state.audioFileName
-          ? `<span class="audio-name">${escapeHtml(state.audioFileName)}</span><button type="button" class="link-danger" data-action="audio-clear">Remove</button>`
-          : `<span class="hint">Spoken narration is transcribed with Muse Voice</span>`}
+          ? `<span class="audio-name">${escapeHtml(state.audioFileName)}${state.audioFromVideo ? ' (from video)' : ''}</span><button type="button" class="link-danger" data-action="audio-clear">Remove</button>`
+          : state.videoAudioNote
+            ? `<span class="hint">${escapeHtml(state.videoAudioNote)}</span>`
+            : `<span class="hint">Spoken narration is transcribed with Muse Voice</span>`}
       </div>
     </section>
 

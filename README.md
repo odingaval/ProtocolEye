@@ -56,7 +56,7 @@ inspection offline.
 
 ```bash
 npm start     # app + API on http://localhost:3001
-npm test      # 74 maintained checks, no runner to install
+npm test      # 78 maintained checks, no runner to install
 npm run build # deploy-time syntax check (used by Vercel)
 ```
 
@@ -70,7 +70,8 @@ Open http://localhost:3001/ in a browser.
    to load the demo SOP (or paste your own / upload `.txt`, `.md`, `.pdf` —
    PDFs load their reader on demand, so the first PDF needs a connection).
 3. Drop a photo or video as evidence (video → key frames are extracted in
-   the browser) and optionally attach audio narration.
+   the browser, and its soundtrack is picked up as narration automatically)
+   and optionally attach separate audio narration.
 4. Click **Run inspection**: voice transcribes, SAM 3.1 grounds, Spark audits.
 5. On the **dashboard**, check the outcome counts, walk the steps sidebar,
    toggle the tracked-component overlay, confirm/reject each assessment,
@@ -116,7 +117,7 @@ weights, so the local pre-check becomes a real preliminary audit.
 │   ├── meta-client.js      # Spark / SAM / Voice calls + parsers
 │   ├── vercel-lib.js       # shared helpers for the api/* routes
 │   ├── dotenv.js           # .env loader
-│   └── __tests__/          # npm test (74 checks)
+│   └── __tests__/          # npm test (78 checks)
 ├── demo/                   # demo video script
 ├── .env.example            # copy to .env and add MODEL_API_KEY
 └── package.json            # scripts only — zero dependencies

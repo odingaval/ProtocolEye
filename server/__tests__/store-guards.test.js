@@ -4,6 +4,7 @@ import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   state, canRun, runInspection, reAuditActiveFrame, startNew,
+  setExplicitAudio, applyVideoAudio, dropVideoAudio,
 } from '../../public/js/store.js';
 
 let stateSnap;
@@ -136,5 +137,43 @@ describe('runInspection multi-frame wiring', () => {
     assert.equal(seenBody.frames[1].label, 'Video frame · 00:00:10');
     assert.equal(state.view, 'dashboard');
     assert.deepEqual(state.auditResult.steps[0].observedIn, ['Video frame · 00:00:05']);
+  });
+});
+
+describe('video soundtrack audio', () => {
+  it('setExplicitAudio marks audio as user-attached', () => {
+    state.videoAudioNote = 'old note';
+    setExplicitAudio({ base64: 'AAA', fileName: 'clip.wav' });
+    assert.equal(state.audioWavBase64, 'AAA');
+    assert.equal(state.audioFileName, 'clip.wav');
+    assert.equal(state.audioFromVideo, false);
+    assert.equal(state.videoAudioNote, null);
+  });
+
+  it('applyVideoAudio stores the soundtrack as from-video', () => {
+    applyVideoAudio({ base64: 'BBB', fileName: 'demo.wav' });
+    assert.equal(state.audioWavBase64, 'BBB');
+    assert.equal(state.audioFromVideo, true);
+    assert.equal(state.videoAudioNote, null);
+  });
+
+  it('applyVideoAudio(null) notes the absence but preserves an explicit upload', () => {
+    applyVideoAudio(null);
+    assert.equal(state.audioWavBase64, null);
+    assert.match(state.videoAudioNote, /pictures only/);
+    setExplicitAudio({ base64: 'AAA', fileName: 'clip.wav' });
+    applyVideoAudio(null);
+    assert.equal(state.audioWavBase64, 'AAA');
+    assert.equal(state.videoAudioNote, null);
+  });
+
+  it('dropVideoAudio removes auto audio but keeps explicit uploads', () => {
+    applyVideoAudio({ base64: 'BBB', fileName: 'demo.wav' });
+    dropVideoAudio();
+    assert.equal(state.audioWavBase64, null);
+    assert.equal(state.audioFromVideo, false);
+    setExplicitAudio({ base64: 'AAA', fileName: 'clip.wav' });
+    dropVideoAudio();
+    assert.equal(state.audioWavBase64, 'AAA');
   });
 });
