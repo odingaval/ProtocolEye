@@ -481,3 +481,21 @@ describe('multi-frame ask', () => {
     assert.equal(msgs[1].content[2].image_url.url, 'data:image/jpeg;base64,BBB');
   });
 });
+
+describe('callSparkAsk completion budget', () => {
+  it('allows enough output tokens for reasoning plus the answer', async () => {
+    process.env.MODEL_API_KEY = 'test-key';
+    let seenBody;
+    const fetchImpl = async (url, opts) => {
+      seenBody = JSON.parse(opts.body);
+      return { ok: true, json: async () => ({ choices: [{ message: { content: 'Because.' } }] }) };
+    };
+    await callSparkAsk({
+      question: 'Why?',
+      step: { index: 1, title: 't', requirement: 'r', status: 'supported', assessment: 'a' },
+      sopText: 'SOP',
+      fetchImpl,
+    });
+    assert.ok(seenBody.max_tokens >= 1000, `max_tokens too small for a reasoning model: ${seenBody.max_tokens}`);
+  });
+});

@@ -223,7 +223,8 @@ export async function callSparkAsk(args) {
       model: SPARK_MODEL,
       messages: buildAskMessages(args),
       temperature: 0.3,
-      max_tokens: 300,
+      // Generous: Spark reasons before answering and reasoning draws from this budget.
+      max_tokens: 2000,
     }),
   });
   if (!res.ok) {
