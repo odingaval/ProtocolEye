@@ -94,7 +94,7 @@ function saveQueue() {
 
 // ---------- derived ----------
 export const activeFrame = () => state.frames[state.activeFrameIndex] ?? null;
-export const canRun = () => !!state.sopText.trim() && state.frames.length > 0 && !state.isRunning;
+export const canRun = () => !!state.sopText.trim() && Boolean(activeFrame()?.base64) && !state.isRunning;
 export const selectedStep = () => state.auditResult?.steps[state.selectedStepIndex] ?? null;
 export const detectionCount = () => state.detections.reduce((n, d) => n + d.boxes.length, 0);
 export const needsReview = () => {
@@ -145,7 +145,14 @@ export function setEvidence(frames, isVideo) {
 
 // ---------- pipeline ----------
 export async function runInspection() {
-  if (!canRun()) return;
+  if (state.isRunning) return;
+  if (!state.sopText.trim() || !activeFrame()?.base64) {
+    state.error = !state.sopText.trim()
+      ? 'Add your SOP text first.'
+      : 'Attach a photo or video as evidence first.';
+    render();
+    return;
+  }
   state.error = null;
   state.syncSummary = null;
 
@@ -222,6 +229,11 @@ export async function runInspection() {
 
 export async function reAuditActiveFrame() {
   if (isOfflineMode() || !state.frames.length || state.isRunning) return;
+  if (!activeFrame()?.base64) {
+    state.error = 'Attach a photo or video as evidence first.';
+    render();
+    return;
+  }
   state.isRunning = true;
   state.stage = 'Re-auditing frame with Muse Spark…';
   state.error = null;
@@ -347,6 +359,17 @@ export function goLanding() {
 }
 
 export function startNew() {
+  if (state.isSamplePreview) {
+    state.sopText = '';
+    state.sopFileName = null;
+    state.frames = [];
+    state.activeFrameIndex = 0;
+    state.isVideoSource = false;
+    state.audioFileName = null;
+    state.audioWavBase64 = null;
+    state.transcript = null;
+    state.procedureName = 'Untitled procedure';
+  }
   state.isSamplePreview = false;
   state.view = 'new';
   state.inspectionId = newInspectionId();

@@ -9,7 +9,7 @@ store.onRender(renderApp);
 function refreshRunButton() {
   const btn = document.querySelector('[data-action="run"]');
   if (!btn) return;
-  const can = !!store.state.sopText.trim() && store.state.frames.length > 0 && !store.state.isRunning;
+  const can = store.canRun();
   btn.disabled = !can;
 }
 

@@ -7,6 +7,6 @@
     "start": "node server/api-server.js",
     "server": "node server/api-server.js",
     "build": "for f in server/*.js server/__tests__/*.js public/js/*.js api/*.js; do node --check \"$f\" || exit 1; done && echo 'build ok: static site in public/'",
-    "test": "node --test server/__tests__/meta-client.test.js server/__tests__/dotenv.test.js server/__tests__/demo-data.test.js server/__tests__/landing-hero.test.js server/__tests__/vercel-api.test.js"
+    "test": "node --test server/__tests__/meta-client.test.js server/__tests__/dotenv.test.js server/__tests__/demo-data.test.js server/__tests__/landing-hero.test.js server/__tests__/vercel-api.test.js server/__tests__/store-guards.test.js"
   }
 }
